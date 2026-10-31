@@ -3,6 +3,7 @@ import { Megaphone, Wrench, MessageCircle, ArrowUpRight, MapPin, UserRound } fro
 import { useState, type ReactNode } from "react";
 import { useSettings } from "@/lib/use-settings";
 import { Button } from "@/components/ui/button";
+import { OwnerPresence } from "@/components/OwnerPresence";
 
 function Logo() {
   return (
@@ -70,6 +71,7 @@ export function SiteChrome({ children }: { children: ReactNode }) {
               {s.owner_url && <Button asChild variant="ghost" size="sm" className="px-0"><a href={s.owner_url} target="_blank" rel="noreferrer">Website <ArrowUpRight /></a></Button>}
               {s.owner_chess_url && <Button asChild variant="ghost" size="sm"><a href={s.owner_chess_url} target="_blank" rel="noreferrer">Chess profile <ArrowUpRight /></a></Button>}
             </div>
+            {s.owner_discord_id && <div className="mt-4 max-w-sm"><OwnerPresence /></div>}
           </section>}
         </div>
       </footer>
