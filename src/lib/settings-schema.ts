@@ -13,6 +13,7 @@ export const settingsSchema = z.object({
   coach_discord_id: z.union([z.literal(""), z.string().regex(/^\d{17,20}$/, "Enter a valid Discord user ID")]),
   coach_avatar_url: optionalUrl,
   owner_name: z.string().max(100),
+  owner_discord_id: z.union([z.literal(""), z.string().regex(/^\d{17,20}$/, "Enter a valid Discord user ID")]),
   owner_bio: z.string().max(300),
   owner_url: optionalUrl,
   owner_title: z.string().trim().max(100),

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useApp, useStoreReady, type ListedGame, type LoaderTab } from "@/lib/store";
 import { fenOnly, parsePgn, type LoadedGame } from "@/lib/chess/game";
+import { OwnerPresence } from "@/components/OwnerPresence";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -133,7 +134,8 @@ function Home() {
             <h1 className="text-3xl font-bold sm:text-4xl">NafChessLog</h1>
             <p className="mt-2 text-sm text-muted-foreground">Your next game review</p>
           </div>
-          <div className="grid max-w-xs grid-cols-3 gap-5 text-center">
+          <OwnerPresence />
+          <div className="hidden max-w-xs grid-cols-3 gap-5 text-center">
             {[
               ["!!", "Brilliant", "text-q-brilliant"],
               ["★", "Best", "text-q-best"],

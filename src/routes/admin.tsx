@@ -98,7 +98,7 @@ function SettingsForm({ token, onLogout }: { token: string; onLogout: () => void
   const [busy, setBusy] = useState(false);
   useEffect(() => setS(current), [current]);
   const up = (p: Partial<SiteSettings>) => setS((x) => ({ ...x, ...p }));
-  const textField = (id: "coach_name" | "coach_discord_id" | "coach_avatar_url" | "owner_name" | "owner_url" | "owner_title" | "owner_location" | "owner_avatar_url" | "owner_chess_url", title: string, placeholder: string) => (
+  const textField = (id: "coach_name" | "coach_discord_id" | "coach_avatar_url" | "owner_name" | "owner_discord_id" | "owner_url" | "owner_title" | "owner_location" | "owner_avatar_url" | "owner_chess_url", title: string, placeholder: string) => (
     <div className="space-y-2"><Label htmlFor={id}>{title}</Label><Input id={id} value={s[id]} placeholder={placeholder} onChange={(e) => up({ [id]: e.target.value })} /></div>
   );
 
@@ -123,6 +123,8 @@ function SettingsForm({ token, onLogout }: { token: string; onLogout: () => void
         <section className="space-y-4 py-5">
           <h2 className="text-lg font-semibold">Owner information</h2>
           {textField("owner_name", "Owner name", "Name displayed in the footer")}
+          {textField("owner_discord_id", "Owner Discord user ID", "17–20 digit user ID")}
+          <p className="text-xs text-muted-foreground">Join the Lanyard Discord server at discord.gg/lanyard to share your live presence.</p>
           <div className="grid gap-4 sm:grid-cols-2">
             {textField("owner_title", "Title / role", "Your role")}
             {textField("owner_location", "Location", "City, country")}
