@@ -54,7 +54,7 @@ export function SiteChrome({ children }: { children: ReactNode }) {
             <p className="mt-4 text-xs leading-relaxed text-muted-foreground">© NafChessLog<br />Engine analysis by Lichess cloud, chess-api.com & Stockfish</p>
             {s.discord_url && <Button asChild variant="outline" size="sm" className="mt-4"><a href={s.discord_url} target="_blank" rel="noreferrer"><MessageCircle /> Community <ArrowUpRight /></a></Button>}
           </div>
-          {s.owner_name && <section aria-label="Owner information" className="min-w-0 md:justify-self-end md:max-w-md">
+          {(s.owner_name || s.owner_discord_id) && <section aria-label="Owner information" className="min-w-0 md:justify-self-end md:max-w-md">
             <div className="mb-3 text-xs font-semibold text-primary">Behind NafChessLog</div>
             <div className="grid grid-cols-[48px_minmax(0,1fr)] gap-3">
               <div className="grid h-12 w-12 place-items-center overflow-hidden rounded-lg border border-border bg-surface text-muted-foreground">
