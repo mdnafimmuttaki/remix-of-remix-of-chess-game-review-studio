@@ -3,3 +3,6 @@
 - [ ] Resolve coach photos from Discord user IDs through a secure connection.
 - [ ] Expand owner footer information controlled from admin settings.
 - [ ] Verify review navigation, settings validation, and responsive layouts.
+- [ ] Add admin-configured owner Discord presence through Lanyard beside the homepage title.
+- [ ] Add an Analyze tab beside Moves with playable variations and best moves.
+- [ ] Improve chessboard movement animations and move sounds.
