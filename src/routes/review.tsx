@@ -28,6 +28,8 @@ import { playSound } from "@/lib/sound";
 import { EvalBar, EvalChart, MoveList, PlayerCard, Summary, QBadge } from "@/components/review/parts";
 import { CLASSIFICATION_META } from "@/lib/chess/metrics";
 import { Coach } from "@/components/review/Coach";
+import { Analyze } from "@/components/review/Analyze";
+import { useAnalysis } from "@/lib/chess/use-analysis";
 
 const Board = lazy(() => import("@/components/review/Board"));
 
@@ -64,6 +66,7 @@ function ReviewPage() {
   const [auto, setAuto] = useState(false);
   const [sound, setSound] = useState(true);
   const [arrow, setArrow] = useState(true);
+  const [tab, setTab] = useState("summary");
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
   const running = useRef<string | null>(null);
   const boardWrap = useRef<HTMLDivElement>(null);
@@ -129,6 +132,7 @@ function ReviewPage() {
   // Keyboard
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
+      if (tab === "analyze") return;
       if (["INPUT", "TEXTAREA", "SELECT"].includes((e.target as HTMLElement)?.tagName) || (e.target as HTMLElement)?.isContentEditable) return;
       if (e.key === "ArrowLeft") go(ply - 1);
       else if (e.key === "ArrowRight") go(ply + 1);
@@ -140,7 +144,7 @@ function ReviewPage() {
     };
     window.addEventListener("keydown", h);
     return () => window.removeEventListener("keydown", h);
-  }, [go, ply, total]);
+  }, [go, ply, total, tab]);
 
   // Autoplay
   useEffect(() => {
@@ -151,6 +155,10 @@ function ReviewPage() {
   }, [auto, ply, total, go]);
 
   const fen = useMemo(() => (!game ? "" : ply === 0 ? game.startFen : game.plies[ply - 1]?.fenAfter ?? game.startFen), [game, ply]);
+  const analyzing = tab === "analyze";
+  const analysis = useAnalysis(fen, analyzing, { apiDepth: settings.engine_depth, localDepth: settings.local_depth }, sound);
+  useEffect(() => { if (game && !game.plies.length) setTab("analyze"); }, [game?.id]);
+  const boardFen = analyzing ? analysis.fen : fen;
 
   if (!ready) {
     return (
@@ -175,10 +183,10 @@ function ReviewPage() {
   const h = game.headers;
   const curMove = ply > 0 ? game.plies[ply - 1] : null;
   const curReview = ply > 0 ? r?.moves[ply - 1] : null;
-  const evalNow = r?.evals[ply]?.score ?? { cp: 0, mate: null };
+  const evalNow = (analyzing ? analysis.evaluation?.score : r?.evals[ply]?.score) ?? { cp: 0, mate: null };
   const topColor = flipped ? "w" : "b";
   const bottomColor = flipped ? "b" : "w";
-  const sideToMove = fen.split(" ")[1];
+  const sideToMove = boardFen.split(" ")[1];
 
   const card = (c: "w" | "b") => (
     <PlayerCard
@@ -229,13 +237,13 @@ function ReviewPage() {
               <ClientOnly fallback={<div className="aspect-square w-full animate-pulse rounded-lg bg-surface" />}>
                 <Suspense fallback={<div className="aspect-square w-full animate-pulse rounded-lg bg-surface" />}>
                   <Board
-                    fen={fen}
+                    fen={boardFen}
                     orientation={flipped ? "black" : "white"}
-                    lastMove={curMove ? { from: curMove.from, to: curMove.to } : null}
-                    badge={curReview?.classification ?? null}
-                    bestMove={r?.evals[ply]?.bestMove ?? null}
+                    lastMove={analyzing ? analysis.lastMove : curMove ? { from: curMove.from, to: curMove.to } : null}
+                    badge={analyzing ? null : curReview?.classification ?? null}
+                    bestMove={analyzing ? analysis.evaluation?.bestMove ?? null : r?.evals[ply]?.bestMove ?? null}
                     showArrow={arrow}
-                    onTryMove={tryMove}
+                    onTryMove={analyzing ? analysis.move : tryMove}
                   />
                 </Suspense>
               </ClientOnly>
@@ -245,19 +253,19 @@ function ReviewPage() {
 
           <div className="mt-3 flex flex-wrap items-center justify-center gap-1 rounded-lg border border-border bg-card p-2 sm:gap-1.5">
             <div className="flex items-center justify-center gap-1 sm:gap-1.5">
-            <Button variant="secondary" size="icon" onClick={() => go(0)} aria-label="First move">
+            <Button variant="secondary" size="icon" onClick={() => analyzing ? analysis.jump(0) : go(0)} aria-label="First move">
               <ChevronFirst />
             </Button>
-            <Button variant="secondary" size="icon" onClick={() => go(ply - 1)} aria-label="Previous move">
+            <Button variant="secondary" size="icon" onClick={() => analyzing ? analysis.jump(analysis.cursor - 1) : go(ply - 1)} aria-label="Previous move">
               <ChevronLeft />
             </Button>
-            <Button size="icon" onClick={() => setAuto((a) => !a)} aria-label={auto ? "Pause" : "Auto-play"} disabled={!total}>
+            <Button size="icon" onClick={() => setAuto((a) => !a)} aria-label={auto ? "Pause" : "Auto-play"} disabled={!total || analyzing}>
               {auto ? <Pause /> : <Play />}
             </Button>
-            <Button variant="secondary" size="icon" onClick={() => go(ply + 1)} aria-label="Next move">
+            <Button variant="secondary" size="icon" onClick={() => analyzing ? analysis.jump(analysis.cursor + 1) : go(ply + 1)} aria-label="Next move">
               <ChevronRight />
             </Button>
-            <Button variant="secondary" size="icon" onClick={() => go(total)} aria-label="Last move">
+            <Button variant="secondary" size="icon" onClick={() => analyzing ? analysis.jump(analysis.line.length) : go(total)} aria-label="Last move">
               <ChevronLast />
             </Button>
             </div>
@@ -309,10 +317,11 @@ function ReviewPage() {
           </div>
 
           <Coach game={game} review={r} ply={ply} settings={settings} />
-          <Tabs defaultValue={total ? "summary" : "moves"} className="flex-1">
-            <TabsList className="grid w-full grid-cols-3 bg-surface">
+          <Tabs value={tab} onValueChange={(value) => { setTab(value); setAuto(false); }} className="flex-1">
+            <TabsList className="grid w-full grid-cols-4 bg-surface">
               <TabsTrigger value="summary">Summary</TabsTrigger>
               <TabsTrigger value="moves">Moves</TabsTrigger>
+              <TabsTrigger value="analyze">Analyze</TabsTrigger>
               <TabsTrigger value="chart">Chart</TabsTrigger>
             </TabsList>
             <TabsContent value="summary" className="mt-4">
@@ -324,6 +333,7 @@ function ReviewPage() {
             <TabsContent value="chart" className="mt-4">
               {r ? <EvalChart review={r} ply={ply} onJump={go} /> : <Pending />}
             </TabsContent>
+            <TabsContent value="analyze" className="mt-4"><Analyze analysis={analysis} /></TabsContent>
           </Tabs>
         </aside>
       </div>
