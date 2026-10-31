@@ -33,6 +33,7 @@ export type Database = {
           owner_avatar_url: string
           owner_bio: string
           owner_chess_url: string
+          owner_discord_id: string
           owner_location: string
           owner_name: string
           owner_title: string
@@ -57,6 +58,7 @@ export type Database = {
           owner_avatar_url?: string
           owner_bio?: string
           owner_chess_url?: string
+          owner_discord_id?: string
           owner_location?: string
           owner_name?: string
           owner_title?: string
@@ -81,6 +83,7 @@ export type Database = {
           owner_avatar_url?: string
           owner_bio?: string
           owner_chess_url?: string
+          owner_discord_id?: string
           owner_location?: string
           owner_name?: string
           owner_title?: string

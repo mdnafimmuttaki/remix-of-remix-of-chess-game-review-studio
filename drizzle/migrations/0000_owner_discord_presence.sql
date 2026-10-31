@@ -1,0 +1,2 @@
+ALTER TABLE public.site_settings ADD COLUMN owner_discord_id text NOT NULL DEFAULT '';
+ALTER TABLE public.site_settings ADD CONSTRAINT owner_discord_id_format CHECK (owner_discord_id = '' OR owner_discord_id ~ '^[0-9]{17,20}$');
