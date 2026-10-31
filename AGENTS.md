@@ -19,3 +19,5 @@
 - Scroll active moves by updating only the move-list container scrollTop; never use scrollIntoView because it also scrolls ancestor pages.
 - Owner footer fields share the site-settings schema and query; keeping a single source ensures admin updates reach every page.
 - Review uses a sticky board and adjacent analysis at medium desktop widths, then stacks on phones; this preserves the board as the primary workspace.
+- Owner presence is fetched client-side from Lanyard using the validated owner settings ID; polling keeps public activity current without server costs.
+- Interactive analysis uses a separate variation history and stale-result guards while sharing the review board; alternate moves never mutate the imported game or its review.

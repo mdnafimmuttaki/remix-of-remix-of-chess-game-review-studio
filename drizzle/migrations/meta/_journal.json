@@ -1,5 +1,13 @@
 {
   "version": "7",
   "dialect": "postgresql",
-  "entries": []
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1793440634740,
+      "tag": "0000_owner_discord_presence",
+      "breakpoints": true
+    }
+  ]
 }
