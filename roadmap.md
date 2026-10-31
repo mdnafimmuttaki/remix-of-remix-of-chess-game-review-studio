@@ -1,0 +1,5 @@
+- [ ] Center move classifications and place Coach above Summary.
+- [ ] Polish desktop and mobile page scaling and visual design.
+- [ ] Resolve coach photos from Discord user IDs through a secure connection.
+- [ ] Expand owner footer information controlled from admin settings.
+- [ ] Verify review navigation, settings validation, and responsive layouts.
