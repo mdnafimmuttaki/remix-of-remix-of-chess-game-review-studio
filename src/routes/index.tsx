@@ -135,18 +135,6 @@ function Home() {
             <p className="mt-2 text-sm text-muted-foreground">Your next game review</p>
           </div>
           <OwnerPresence />
-          <div className="hidden max-w-xs grid-cols-3 gap-5 text-center">
-            {[
-              ["!!", "Brilliant", "text-q-brilliant"],
-              ["★", "Best", "text-q-best"],
-              ["??", "Blunder", "text-q-blunder"],
-            ].map(([s, l, c]) => (
-              <div key={l} className="py-1">
-                <div className={`tabular text-2xl font-bold ${c}`}>{s}</div>
-                <div className="mt-1 text-xs text-muted-foreground">{l}</div>
-              </div>
-            ))}
-          </div>
         </section>
 
         <section className="min-w-0">
